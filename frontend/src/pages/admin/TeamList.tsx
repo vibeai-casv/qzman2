@@ -56,12 +56,12 @@ export default function TeamList() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">Team Management</h1>
-                    <p className="text-gray-400">Monitor and manage participating teams.</p>
+                    <h1 className="text-4xl font-extrabold text-gradient">Team Management</h1>
+                    <p className="text-muted-foreground mt-2 text-lg">Monitor and manage participating teams.</p>
                 </div>
             </div>
 
-            <Card>
+            <Card className="glass border-0">
                 <CardHeader>
                     <div className="flex gap-4 items-center">
                         <div className="relative flex-1 max-w-sm">

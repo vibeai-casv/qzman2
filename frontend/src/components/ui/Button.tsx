@@ -8,7 +8,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 interface ButtonProps extends HTMLMotionProps<"button"> {
-    variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'danger';
+    variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'danger' | 'outline';
     size?: 'sm' | 'md' | 'lg' | 'icon';
     isLoading?: boolean;
 }
@@ -22,6 +22,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             accent: "bg-accent text-accent-foreground hover:bg-accent/90",
             ghost: "hover:bg-accent/10 hover:text-accent-foreground",
             danger: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+            outline: "border border-input hover:bg-accent hover:text-accent-foreground",
         };
 
         const sizes = {

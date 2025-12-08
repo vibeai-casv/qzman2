@@ -134,14 +134,14 @@ export default function QuizDetail() {
                 </div>
 
                 {quiz.rounds?.map((round: any) => (
-                    <Card key={round.id} className="overflow-hidden border border-white/10 bg-black/20">
+                    <Card key={round.id} className="overflow-hidden glass border-0 bg-white/5">
                         <div
                             className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors"
                             onClick={() => setExpandedRound(expandedRound === round.id ? null : round.id)}
                         >
                             <div className="flex items-center gap-4">
-                                {expandedRound === round.id ? <ChevronDown size={20} className="text-gray-500" /> : <ChevronRight size={20} className="text-gray-500" />}
-                                <h3 className="font-bold text-lg text-white">{round.title}</h3>
+                                {expandedRound === round.id ? <ChevronDown size={20} className="text-cyan-400" /> : <ChevronRight size={20} className="text-gray-500" />}
+                                <h3 className="font-bold text-lg text-white group-hover:text-cyan-400 transition-colors">{round.title}</h3>
                                 <Badge variant="outline">{round.questions?.length || 0} Questions</Badge>
                             </div>
                             <div className="flex items-center gap-2">

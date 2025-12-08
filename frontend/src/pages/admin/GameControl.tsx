@@ -110,7 +110,7 @@ export default function GameControl() {
     if (!quiz) return <div className="p-10 text-center text-white">Loading Game Control...</div>;
 
     return (
-        <div className="h-screen flex flex-col bg-[#0a0a0e] text-white overflow-hidden">
+        <div className="h-screen flex flex-col bg-background text-white overflow-hidden">
             {/* Top Bar */}
             <div className="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-black/40">
                 <div className="flex items-center gap-4">

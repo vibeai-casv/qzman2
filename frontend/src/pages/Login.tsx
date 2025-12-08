@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Lock, User } from 'lucide-react';
+import AnimatedBackground from '../components/ui/AnimatedBackground';
 
 
 export default function Login() {
@@ -14,27 +15,55 @@ export default function Login() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // For now, we are using Basic Auth for simplicity in this MVP or just hitting an endpoint
-        // In a real app, use JWT. Here we will just verify credentials via a custom 'me' endpoint or login
-        // For this strict LAN version, we'll simulate a login success if the API responds well to a check
-        // Actually, Django Session auth works if we are on the same domain (proxy).
+
+        const payload = {
+            username: credentials.username.trim(),
+            password: credentials.password.trim()
+        };
+
+        // Debug: Log payload
+        console.log('Sending login payload:', payload);
 
         try {
-            // We'll try to hit a protected endpoint or a login endpoint.
-            // Since we haven't built a specific auth/login API yet, let's just "simulate" access for the demo 
-            // if the user entered *something*. 
-            // Ideally: await fetchAPI('/auth/login', { method: 'POST', body: ... })
+            const res = await fetch('/api/auth/login/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-            // For production V2: Let's assume the superuser created earlier is the key.
-            // We will store a simple "isAuthenticated" in localStorage for the frontend router to check.
+            console.log('Login response status:', res.status);
+            const data = await res.json();
+            console.log('Login response data:', data);
 
-            if (credentials.username && credentials.password) {
+            if (data.success) {
                 localStorage.setItem('isAuthenticated', 'true');
-                navigate('/admin');
+                localStorage.setItem('userRole', data.role);
+                localStorage.setItem('username', data.username);
+
+                // Redirect based on role
+                switch (data.role) {
+                    case 'SUPER_ADMIN':
+                        navigate('/super-admin');
+                        break;
+                    case 'QUIZ_MASTER':
+                        navigate('/quiz-master');
+                        break;
+                    case 'SCORE_MANAGER':
+                        navigate('/score-manager');
+                        break;
+                    case 'ADMIN':
+                    default:
+                        navigate('/admin');
+                        break;
+                }
+            } else {
+                // Improved Error Reporting
+                const errorMsg = data.error || data.detail || JSON.stringify(data);
+                alert(`Login Failed: ${errorMsg}`);
             }
         } catch (error) {
-            console.error(error);
-            alert('Login failed');
+            console.error('Login Fetch Error:', error);
+            alert(`Network/Server Error: ${error}`);
         } finally {
             setLoading(false);
         }
@@ -42,55 +71,56 @@ export default function Login() {
 
     return (
         <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#050505]">
-            {/* Background Effects */}
-            <div className="absolute inset-0 w-full h-full bg-grid-white/[0.02] bg-[size:50px_50px]" />
-            <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px]" />
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px]" />
+            <AnimatedBackground />
 
             <motion.div
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="relative z-10 w-full max-w-md px-4"
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="relative z-10 w-full max-w-2xl px-6"
             >
-                <Card className="border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl">
-                    <CardHeader className="text-center pb-2">
+                <Card className="border-qz-primary/20 bg-slate-950/60 backdrop-blur-xl shadow-2xl p-8 lg:p-12 shadow-qz-primary/10">
+                    <CardHeader className="text-center pb-8">
                         <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                            className="w-16 h-16 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg"
+                            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
+                            className="w-24 h-24 bg-gradient-to-tr from-qz-primary to-qz-accent rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-2xl shadow-qz-primary/30"
                         >
-                            <Lock className="text-white" size={32} />
+                            <Lock className="text-white" size={48} />
                         </motion.div>
-                        <CardTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+                        <CardTitle className="text-5xl font-bold text-white tracking-tight mb-4">
                             Welcome Back
                         </CardTitle>
-                        <p className="text-muted-foreground mt-2">Enter your credentials to access the QzMan Control Center.</p>
+                        <p className="text-slate-400 text-xl font-medium">Enter your credentials to access the QzMan Control Center.</p>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleLogin} className="space-y-6 mt-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-300 ml-1">Username</label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-3 text-gray-500" size={18} />
+                        <form onSubmit={handleLogin} className="space-y-8">
+                            <div className="space-y-3">
+                                <label className="text-lg font-semibold text-slate-300 ml-1">Username</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <User className="text-slate-500 group-focus-within:text-qz-primary transition-colors" size={24} />
+                                    </div>
                                     <input
                                         type="text"
-                                        className="w-full bg-white/5 border border-white/10 rounded-lg py-2.5 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all font-medium"
-                                        placeholder="admin"
+                                        className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-4 pl-14 pr-6 text-white text-xl placeholder-slate-600 focus:outline-none focus:border-qz-primary/50 focus:ring-2 focus:ring-qz-primary/20 transition-all font-medium"
+                                        placeholder="Enter your username"
                                         value={credentials.username}
                                         onChange={e => setCredentials({ ...credentials, username: e.target.value })}
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-300 ml-1">Password</label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-3 text-gray-500" size={18} />
+                            <div className="space-y-3">
+                                <label className="text-lg font-semibold text-slate-300 ml-1">Password</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <Lock className="text-slate-500 group-focus-within:text-qz-primary transition-colors" size={24} />
+                                    </div>
                                     <input
                                         type="password"
-                                        className="w-full bg-white/5 border border-white/10 rounded-lg py-2.5 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all font-medium"
-                                        placeholder="••••••••"
+                                        className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-4 pl-14 pr-6 text-white text-xl placeholder-slate-600 focus:outline-none focus:border-qz-primary/50 focus:ring-2 focus:ring-qz-primary/20 transition-all font-medium"
+                                        placeholder="••••••••••••"
                                         value={credentials.password}
                                         onChange={e => setCredentials({ ...credentials, password: e.target.value })}
                                     />
@@ -100,9 +130,9 @@ export default function Login() {
                             <Button
                                 type="submit"
                                 isLoading={loading}
-                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3 shadow-lg shadow-blue-500/25"
+                                className="w-full bg-gradient-to-r from-qz-primary to-qz-accent hover:opacity-90 text-white text-xl font-bold py-5 rounded-xl shadow-xl shadow-qz-primary/20 hover:shadow-qz-primary/30 transition-all transform hover:scale-[1.02] mt-4"
                             >
-                                Sign In
+                                Sign In to Dashboard
                             </Button>
                         </form>
                     </CardContent>

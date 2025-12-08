@@ -8,18 +8,28 @@ import QuizDetail from './pages/admin/QuizDetail';
 import GameControl from './pages/admin/GameControl';
 
 import Login from './pages/Login';
+import LandingPage from './pages/LandingPage';
 
 import JoinQuiz from './pages/team/JoinQuiz';
 import Lobby from './pages/team/Lobby';
 
 import ProjectorView from './pages/projector/ProjectorView';
 
+// New Dashboards
+import SuperAdminDashboard from './pages/dashboard/SuperAdminDashboard';
+import QuizMasterDashboard from './pages/dashboard/QuizMasterDashboard';
+import ScoreManagerDashboard from './pages/dashboard/ScoreManagerDashboard';
+
+// New Admin Components
+import Settings from './pages/admin/Settings';
+import UserManagement from './pages/admin/UserManagement';
+
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-background text-foreground font-sans antialiased">
         <Routes>
-          <Route path="/" element={<div className="p-10 text-center"><h1 className="text-4xl font-bold text-primary">QzMan Gateway</h1><p className="mt-4 text-muted-foreground">Select your role:</p><div className="flex gap-4 justify-center mt-6"><a href="/login" className="px-4 py-2 bg-primary text-primary-foreground rounded">Admin/QM</a><a href="/play" className="px-4 py-2 bg-accent text-accent-foreground rounded">Team Play</a><a href="/projector" className="px-4 py-2 bg-secondary text-secondary-foreground rounded">Projector</a></div></div>} />
+          <Route path="/" element={<LandingPage />} />
 
           <Route path="/login" element={<Login />} />
 
@@ -28,6 +38,22 @@ function App() {
 
           <Route path="/projector/:id" element={<ProjectorView />} />
 
+          {/* Role based Routes - reusing AdminLayout for now which has sidebar */}
+
+          <Route path="/super-admin" element={<AdminLayout />}>
+            <Route index element={<SuperAdminDashboard />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+
+          <Route path="/quiz-master" element={<AdminLayout />}>
+            <Route index element={<QuizMasterDashboard />} />
+          </Route>
+
+          <Route path="/score-manager" element={<AdminLayout />}>
+            <Route index element={<ScoreManagerDashboard />} />
+          </Route>
+
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="quizzes" element={<QuizList />} />
@@ -35,6 +61,7 @@ function App() {
             <Route path="quizzes/:id/play" element={<GameControl />} />
             <Route path="questions" element={<QuestionBank />} />
             <Route path="teams" element={<TeamList />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
       </div>

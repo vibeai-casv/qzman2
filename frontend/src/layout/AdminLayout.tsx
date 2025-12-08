@@ -25,12 +25,21 @@ export default function AdminLayout() {
         }
     }, [navigate]);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout/', { method: 'POST' });
+        } catch (e) {
+            console.error(e);
+        }
         localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('username');
         navigate('/login');
     };
 
-    const navItems = [
+    const role = localStorage.getItem('userRole') || 'ADMIN';
+
+    let navItems = [
         { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
         { name: 'My Quizzes', path: '/admin/quizzes', icon: BookOpen },
         { name: 'Question Bank', path: '/admin/questions', icon: PlusCircle },
@@ -38,8 +47,27 @@ export default function AdminLayout() {
         { name: 'Settings', path: '/admin/settings', icon: Settings },
     ];
 
+    if (role === 'SUPER_ADMIN') {
+        navItems = [
+            { name: 'Console', path: '/super-admin', icon: LayoutDashboard },
+            { name: 'Users', path: '/super-admin/users', icon: Users },
+            { name: 'Settings', path: '/admin/settings', icon: Settings },
+        ];
+    } else if (role === 'QUIZ_MASTER') {
+        navItems = [
+            { name: 'Control', path: '/quiz-master', icon: LayoutDashboard },
+            { name: 'Quizzes', path: '/admin/quizzes', icon: BookOpen },
+            { name: 'Question Bank', path: '/admin/questions', icon: PlusCircle },
+        ];
+    } else if (role === 'SCORE_MANAGER') {
+        navItems = [
+            { name: 'Score Station', path: '/score-manager', icon: LayoutDashboard },
+            { name: 'Teams', path: '/admin/teams', icon: Users },
+        ];
+    }
+
     return (
-        <div className="flex h-screen bg-[#0a0a0e] overflow-hidden">
+        <div className="flex h-screen bg-background overflow-hidden">
             {/* Sidebar */}
             <motion.aside
                 initial={false}

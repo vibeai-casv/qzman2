@@ -132,13 +132,13 @@ export default function QuestionBank() {
             className="space-y-6"
         >
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">Question Bank</h1>
-                <Button onClick={openCreate} className="gap-2">
+                <h1 className="text-4xl font-extrabold text-gradient">Question Bank</h1>
+                <Button onClick={openCreate} className="gap-2 shadow-lg shadow-purple-500/20 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 border-none">
                     <Plus size={18} /> Add Question
                 </Button>
             </div>
 
-            <Card>
+            <Card className="glass border-0">
                 <CardHeader>
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="relative flex-1">

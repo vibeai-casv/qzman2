@@ -1,11 +1,80 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.middleware.csrf import get_token
 from .models import Quiz, QuestionBank, Team, Round, QuizQuestion, ScoreLog
 from .serializers import QuizSerializer, QuestionBankSerializer, TeamSerializer
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
+    print(f"DEBUG LOGIN Attempt: user='{username}' pass='{password}'")
+
+    user = authenticate(request, username=username, password=password)
+    
+    if user is not None:
+        print(f"DEBUG LOGIN Success: {user} Active={user.is_active}")
+        login(request, user)
+        
+        # Determine Role
+        role = 'USER'
+        if user.is_superuser:
+            role = 'SUPER_ADMIN'
+        elif user.groups.filter(name='Score Manager').exists():
+            role = 'SCORE_MANAGER'
+        elif user.groups.filter(name='Quiz Master').exists():
+            role = 'QUIZ_MASTER'
+        elif user.is_staff:
+             role = 'ADMIN'
+
+        return Response({
+            'success': True,
+            'role': role,
+            'username': user.username
+        })
+    else:
+        return Response({'success': False, 'error': 'Invalid Credentials'}, status=400)
+
+@api_view(['POST'])
+def logout_view(request):
+    logout(request)
+    return Response({'success': True})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def me_view(request):
+    user = request.user
+    role = 'USER'
+    if user.is_superuser:
+        role = 'SUPER_ADMIN'
+    elif user.groups.filter(name='Score Manager').exists():
+         role = 'SCORE_MANAGER'
+    elif user.groups.filter(name='Quiz Master').exists():
+        role = 'QUIZ_MASTER'
+    elif user.is_staff:
+         role = 'ADMIN'
+            
+    return Response({
+        'username': user.username,
+        'role': role,
+        'is_authenticated': True
+    })
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def csrf_token(request):
+    return Response({'csrfToken': get_token(request)})
 
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()

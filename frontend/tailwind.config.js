@@ -33,12 +33,51 @@ export default {
                     "4": "hsl(var(--chart-4))",
                     "5": "hsl(var(--chart-5))",
                 },
+                // QZMAN Design System Colors
+                'qz-primary': '#4361ee',
+                'qz-secondary': '#3a0ca3',
+                'qz-accent': '#f72585',
+                'qz-success': '#4cc9f0',
+                'qz-warning': '#f8961e',
+                'qz-danger': '#f94144'
             },
             borderRadius: {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
             },
+            animation: {
+                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'bounce-slow': 'bounce 2s infinite',
+                'slide-in': 'slideIn 0.5s ease-out',
+                'fade-in': 'fadeIn 0.3s ease-out',
+                'float': 'float 3s ease-in-out infinite',
+                'buzzer-glow': 'buzzerGlow 0.5s infinite',
+                'score-increase': 'score-increase 0.5s ease',
+            },
+            keyframes: {
+                slideIn: {
+                    'from': { transform: 'translateY(20px)', opacity: '0' },
+                    'to': { transform: 'translateY(0)', opacity: '1' },
+                },
+                fadeIn: {
+                    'from': { opacity: '0' },
+                    'to': { opacity: '1' },
+                },
+                float: {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-10px)' },
+                },
+                buzzerGlow: {
+                    '0%, 100%': { boxShadow: '0 0 20px #f72585' },
+                    '50%': { boxShadow: '0 0 40px #f72585' },
+                },
+                'score-increase': {
+                    '0%': { transform: 'scale(1)' },
+                    '50%': { transform: 'scale(1.2)', color: '#10b981' },
+                    '100%': { transform: 'scale(1)' },
+                }
+            }
         },
     },
     plugins: [],
