@@ -1,18 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/FormControls';
-import { Modal } from '../../components/ui/Modal';
-import { Plus, Download, Upload, Play, Calendar } from 'lucide-react';
+import { Plus, Download, Upload, Play, Calendar, BookOpen } from 'lucide-react';
 import { fetchAPI, uploadFile } from '../../lib/api';
+import AdminPageLayout from '../../layout/AdminPageLayout';
 
 interface Quiz {
     id: number;
     title: string;
     description: string;
     created_at: string;
-    rounds: any[];
+    rounds: unknown[];
 }
 
 export default function QuizList() {
@@ -31,7 +28,6 @@ export default function QuizList() {
     };
 
     const handleExport = (id: number) => {
-        // Direct link download for simplicity as API returns file attachment
         window.location.href = `/api/quizzes/${id}/export_data/`;
     };
 
@@ -64,7 +60,7 @@ export default function QuizList() {
                 body: JSON.stringify({
                     title: newQuizTitle,
                     description: newQuizDesc,
-                    created_by: 1 // TODO: Get from auth context
+                    created_by: 1
                 })
             });
             setCreateModalOpen(false);
@@ -77,102 +73,151 @@ export default function QuizList() {
         }
     };
 
+    const actions = (
+        <>
+            <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".json"
+                onChange={handleFileChange}
+            />
+            <button
+                onClick={handleImportClick}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            >
+                <Upload className="w-4 h-4 mr-2" />
+                Import Quiz
+            </button>
+            <button
+                onClick={() => setCreateModalOpen(true)}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm"
+            >
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Quiz
+            </button>
+        </>
+    );
+
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="space-y-8"
+        <AdminPageLayout
+            title="Quiz Management"
+            subtitle="Create, manage, and run your quiz events"
+            actions={actions}
         >
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-4xl font-extrabold text-gradient">My Quizzes</h1>
-                    <p className="text-muted-foreground mt-2 text-lg">Manage your quiz events.</p>
-                </div>
-                <div className="flex gap-4">
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        accept=".json"
-                        onChange={handleFileChange}
-                    />
-                    <Button variant="secondary" onClick={handleImportClick} className="gap-2">
-                        <Upload size={18} />
-                        Import Quiz
-                    </Button>
-                    <Button onClick={() => setCreateModalOpen(true)} className="gap-2 shadow-lg shadow-cyan-500/20 bg-gradient-to-r from-cyan-500 to-blue-600 border-none">
-                        <Plus size={18} />
-                        Create New Quiz
-                    </Button>
-                </div>
-            </div>
-
+            {/* Quiz Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {quizzes.map((quiz) => (
-                    <Card key={quiz.id} hoverEffect className="group relative overflow-hidden glass border-0 bg-white/5">
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <CardHeader>
-                            <CardTitle className="flex justify-between items-start">
-                                <span className="truncate pr-4 text-xl font-bold text-white">{quiz.title}</span>
-                                <span className="flex h-2 w-2 translate-y-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]" />
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-gray-400 line-clamp-2 min-h-[40px]">{quiz.description || "No description provided."}</p>
+                {quizzes.map((quiz, index) => (
+                    <motion.div
+                        key={quiz.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow group"
+                    >
+                        <div className="p-6">
+                            <div className="flex items-start justify-between mb-3">
+                                <div className="p-2 bg-indigo-100 rounded-lg">
+                                    <BookOpen className="w-5 h-5 text-indigo-600" />
+                                </div>
+                                <span className="flex h-2 w-2 rounded-full bg-green-400 shadow-sm" />
+                            </div>
 
-                            <div className="mt-6 flex items-center gap-4 text-xs text-gray-500">
-                                <span className="flex items-center gap-1"><Calendar size={12} /> {new Date().toLocaleDateString()}</span>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
+                                {quiz.title}
+                            </h3>
+                            <p className="text-sm text-gray-500 line-clamp-2 min-h-[40px]">
+                                {quiz.description || "No description provided."}
+                            </p>
+
+                            <div className="mt-4 flex items-center gap-4 text-xs text-gray-500">
+                                <span className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    {new Date(quiz.created_at || Date.now()).toLocaleDateString()}
+                                </span>
                                 <span>•</span>
                                 <span>{quiz.rounds?.length || 0} Rounds</span>
                             </div>
 
-                            <div className="mt-6 flex gap-2">
-                                <Button size="sm" className="flex-1 gap-2 bg-white/10 hover:bg-white/20 border-0" onClick={() => window.location.href = `/admin/quizzes/${quiz.id}`}>
-                                    <Play size={14} className="fill-current" /> Manage
-                                </Button>
-                                <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); handleExport(quiz.id); }}>
-                                    <Download size={16} />
-                                </Button>
+                            <div className="mt-4 pt-4 border-t border-gray-100 flex gap-2">
+                                <a
+                                    href={`/admin/quizzes/${quiz.id}`}
+                                    className="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
+                                >
+                                    <Play className="w-4 h-4 mr-1" />
+                                    Manage
+                                </a>
+                                <button
+                                    onClick={() => handleExport(quiz.id)}
+                                    className="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                                >
+                                    <Download className="w-4 h-4" />
+                                </button>
                             </div>
-                        </CardContent>
-                    </Card>
-                ))}
-                {quizzes.length === 0 && (
-                    <div className="col-span-full py-20 text-center text-gray-500 border-2 border-dashed border-white/5 rounded-3xl bg-white/5 flex flex-col items-center justify-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
-                            <Plus size={24} className="opacity-50" />
                         </div>
-                        <p>No Quizzes Found. Create one or Import from JSON.</p>
+                    </motion.div>
+                ))}
+
+                {quizzes.length === 0 && (
+                    <div className="col-span-full py-16 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                            <Plus className="w-6 h-6 text-gray-400" />
+                        </div>
+                        <h3 className="text-gray-900 font-medium mb-1">No Quizzes Found</h3>
+                        <p className="text-gray-500 text-sm">Create a new quiz or import from JSON to get started.</p>
                     </div>
                 )}
             </div>
 
-            <Modal isOpen={isCreateModalOpen} onClose={() => setCreateModalOpen(false)} title="Create New Quiz">
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300">Quiz Title</label>
-                        <Input
-                            value={newQuizTitle}
-                            onChange={(e) => setNewQuizTitle(e.target.value)}
-                            placeholder="e.g. Science Fair 2025"
-                            className="bg-black/40"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300">Description</label>
-                        <Input
-                            value={newQuizDesc}
-                            onChange={(e) => setNewQuizDesc(e.target.value)}
-                            placeholder="Optional description..."
-                            className="bg-black/40"
-                        />
-                    </div>
-                    <div className="flex justify-end gap-2 mt-6">
-                        <Button variant="ghost" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
-                        <Button onClick={handleCreateQuiz} className="bg-gradient-to-r from-cyan-500 to-blue-600 border-none">Create Quiz</Button>
-                    </div>
+            {/* Create Modal */}
+            {isCreateModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50" onClick={() => setCreateModalOpen(false)} />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-4"
+                    >
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">Create New Quiz</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Quiz Title</label>
+                                <input
+                                    type="text"
+                                    value={newQuizTitle}
+                                    onChange={(e) => setNewQuizTitle(e.target.value)}
+                                    placeholder="e.g. Science Fair 2025"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <input
+                                    type="text"
+                                    value={newQuizDesc}
+                                    onChange={(e) => setNewQuizDesc(e.target.value)}
+                                    placeholder="Optional description..."
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                />
+                            </div>
+                            <div className="flex justify-end gap-3 pt-4">
+                                <button
+                                    onClick={() => setCreateModalOpen(false)}
+                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleCreateQuiz}
+                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                >
+                                    Create Quiz
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
                 </div>
-            </Modal>
-        </motion.div>
-    )
+            )}
+        </AdminPageLayout>
+    );
 }
