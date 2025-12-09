@@ -48,9 +48,9 @@ export default function QuizDetail() {
                 method: 'POST',
                 body: JSON.stringify({
                     quiz: id,
-                    title: roundName,
+                    name: roundName,
                     order: (quiz.rounds?.length || 0) + 1,
-                    type: 'NORMAL'
+                    type: 'MCQ' // Defaulting to MCQ as NORMAL is not in choices
                 })
             });
             setIsRoundModalOpen(false);
@@ -141,7 +141,7 @@ export default function QuizDetail() {
                         >
                             <div className="flex items-center gap-4">
                                 {expandedRound === round.id ? <ChevronDown size={20} className="text-cyan-400" /> : <ChevronRight size={20} className="text-gray-500" />}
-                                <h3 className="font-bold text-lg text-white group-hover:text-cyan-400 transition-colors">{round.title}</h3>
+                                <h3 className="font-bold text-lg text-white group-hover:text-cyan-400 transition-colors">{round.name}</h3>
                                 <Badge variant="outline">{round.questions?.length || 0} Questions</Badge>
                             </div>
                             <div className="flex items-center gap-2">
