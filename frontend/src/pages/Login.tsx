@@ -245,6 +245,95 @@ export default function Login() {
                     <p className="text-center mt-8 text-xs text-slate-600">
                         © 2024 QZMAN Quiz System. All rights reserved.
                     </p>
+
+                    {/* Test Credentials Section */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="mt-8 bg-slate-900/60 backdrop-blur-xl rounded-2xl p-6 border border-amber-500/20"
+                    >
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                            <h3 className="text-sm font-semibold text-amber-400">Test Credentials</h3>
+                        </div>
+                        <div className="space-y-3">
+                            {/* Super Admin */}
+                            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs font-medium text-purple-400">Super Admin</span>
+                                    <span className="text-xs text-slate-500">All Permissions</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                        <span className="text-slate-400">Username:</span>
+                                        <span className="ml-2 text-white font-mono">sadmin</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-400">Password:</span>
+                                        <span className="ml-2 text-white font-mono">password@123</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Admin */}
+                            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs font-medium text-blue-400">Admin</span>
+                                    <span className="text-xs text-slate-500">Staff Access</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                        <span className="text-slate-400">Username:</span>
+                                        <span className="ml-2 text-white font-mono">admin</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-400">Password:</span>
+                                        <span className="ml-2 text-white font-mono">password@123</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Quiz Master */}
+                            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs font-medium text-green-400">Quiz Master</span>
+                                    <span className="text-xs text-slate-500">Quiz Control</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                        <span className="text-slate-400">Username:</span>
+                                        <span className="ml-2 text-white font-mono">qzmaster</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-400">Password:</span>
+                                        <span className="ml-2 text-white font-mono">password@123</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Score Manager */}
+                            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs font-medium text-cyan-400">Score Manager</span>
+                                    <span className="text-xs text-slate-500">Score Management</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                        <span className="text-slate-400">Username:</span>
+                                        <span className="ml-2 text-white font-mono">scoremanager</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-400">Password:</span>
+                                        <span className="ml-2 text-white font-mono">password@123</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-4 text-center">
+                            ⚠️ For testing purposes only
+                        </p>
+                    </motion.div>
                 </motion.div>
             </div>
 
